@@ -1,5 +1,5 @@
 # ofxAVString
-A utility class for the yugop style text effect in openFrameworks.
+A utility class for the yugop style text effect a.k.a. Ascii Vibration in openFrameworks.
 
 ## Usage
 
