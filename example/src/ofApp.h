@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxStringShuffler.h"
+#include "ofxAVString.h"
 
 class ofApp : public ofBaseApp
 {
@@ -13,6 +13,6 @@ public:
 
     void keyPressed(int key);
 		
-    ofxStringShuffler ss;
+    ofxAVString avs;
     ofTrueTypeFont font;
 };
