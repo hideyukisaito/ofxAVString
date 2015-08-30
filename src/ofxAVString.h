@@ -2,38 +2,69 @@
 
 #include "ofEvents.h"
 
-class ofxStringShuffler
+class ofxAVString
 {
 public:
-    ofxStringShuffler():
-    mTargetStr(""),
-    mCurrentStr(""),
+    
+    ofxAVString():
+    mTargetStr(),
+    mCurrentStr(),
     mStrIndex(0),
     mRange(0),
     mLastStoppedTimeMillis(0)
-    {}
-    
-    ofxStringShuffler(const ofxStringShuffler &mom)
     {
-        assign(mom);
     }
     
-    ofxStringShuffler & operator=(const ofxStringShuffler &mom)
+    ofxAVString(const string target):
+    mTargetStr(target),
+    mCurrentStr(),
+    mStrIndex(0),
+    mRange(0),
+    mLastStoppedTimeMillis(0)
     {
-        assign(mom);
     }
     
-    void assign(const ofxStringShuffler &mom)
+    ofxAVString(const ofxAVString &mom)
     {
-        mTargetStr = mom.mTargetStr;
-        mCurrentStr = mom.mCurrentStr;
-        mStrIndex = mom.mStrIndex;
-        mRange = mom.mRange;
-        mIntervalMillis = mom.mIntervalMillis;
-        mLastStoppedTimeMillis = mom.mLastStoppedTimeMillis;
+        _assign(mom);
     }
     
-    ~ofxStringShuffler()
+    ofxAVString & operator=(const ofxAVString &mom)
+    {
+        _assign(mom);
+        return *this;
+    }
+    
+    ofxAVString & operator+=(const ofxAVString &str)
+    {
+        setup(mTargetStr + str.mTargetStr);
+        return *this;
+    }
+    
+    string & operator=(const string &str)
+    {
+        setup(str);
+        return mTargetStr;
+    }
+    
+    string & operator+=(const string &str)
+    {
+        setup(mTargetStr + str);
+        return mTargetStr;
+    }
+    
+    friend ostream & operator<<(ostream &os, const ofxAVString &str)
+    {
+        os << str.mTargetStr;
+        return os;
+    }
+    
+    operator string()
+    {
+        return mCurrentStr;
+    }
+    
+    ~ofxAVString()
     {
         mTargetStr.clear();
         mCurrentStr.clear();
@@ -56,7 +87,7 @@ public:
             mLastStoppedTimeMillis = ofGetElapsedTimeMillis();
             
             if (++mStrIndex > mTargetStr.length()) {
-                ofRemoveListener(ofEvents().update, this, &ofxStringShuffler::update);
+                ofRemoveListener(ofEvents().update, this, &ofxAVString::update);
                 mRange = 0;
             }
         }
@@ -65,13 +96,15 @@ public:
     void play(const size_t range = 0, const double durationMillis = 1000, const double delayMillis = 0)
     {
         mRange = 0 == range ? mTargetStr.length() : range;
+        
         mIntervalMillis = durationMillis / mTargetStr.length();ofLog() << mIntervalMillis;
         mLastStoppedTimeMillis = ofGetElapsedTimeMillis() + delayMillis;
+        
         mCurrentStr.clear();
         mCurrentStr.resize(mTargetStr.length(), ' ');
         mStrIndex = 0;
         
-        ofAddListener(ofEvents().update, this, &ofxStringShuffler::update);
+        ofAddListener(ofEvents().update, this, &ofxAVString::update);
     }
     
     const string & get()
@@ -80,6 +113,17 @@ public:
     }
     
 private:
+    
+    void _assign(const ofxAVString &mom)
+    {
+        mTargetStr = mom.mTargetStr;
+        mCurrentStr = mom.mCurrentStr;
+        mStrIndex = mom.mStrIndex;
+        mRange = mom.mRange;
+        mIntervalMillis = mom.mIntervalMillis;
+        mLastStoppedTimeMillis = mom.mLastStoppedTimeMillis;
+    }
+    
     string mTargetStr, mCurrentStr;
     size_t mStrIndex, mRange;
     double mIntervalMillis, mLastStoppedTimeMillis;
